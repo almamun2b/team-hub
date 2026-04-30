@@ -1,55 +1,46 @@
 enum UserRole {
+  SUPER_ADMIN
   ADMIN
-  USER
+  MEMBER
 }
 
 enum UserStatus {
   ACTIVE
   INACTIVE
   BLOCKED
-  DELETED
 }
 
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
+enum WorkspaceRole {
+  ADMIN
+  MEMBER
 }
 
-enum PaymentStatus {
-  PAID
-  UNPAID
-}
-
-enum SubscriptionStatus {
-  ACTIVE
-  EXPIRED
-  CANCELLED
-}
-
-enum SubscriptionPlan {
-  FREE
-  MONTHLY
-  YEARLY
-}
-
-enum TravelType {
-  SOLO
-  FAMILY
-  FRIENDS
-  COUPLE
-  GROUP
-}
-
-enum TravelPlanStatus {
-  OPEN
-  CLOSED
+enum GoalStatus {
+  IN_PROGRESS
   COMPLETED
+  ON_HOLD
   CANCELLED
 }
 
-enum TravelRequestStatus {
-  PENDING
-  APPROVED
-  REJECTED
+enum ActionItemPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ActionItemStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum ActivityType {
+  GOAL_CREATED
+  GOAL_UPDATED
+  MILESTONE_COMPLETED
+  ANNOUNCEMENT_POSTED
+  ACTION_ITEM_ASSIGNED
+  ACTION_ITEM_COMPLETED
 }

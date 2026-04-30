@@ -1,35 +1,37 @@
 import express from "express";
-import { apiLimiter } from "../middlewares/rateLimiter";
 import { AuthRoutes } from "../modules/auth/auth.routes";
-import { PaymentRoutes } from "../modules/payment/payment.routes";
-import { reviewRoutes } from "../modules/review/review.routes";
-import { travelPlanRoutes } from "../modules/travelPlans/travelPlans.routes";
-import { userRoutes } from "../modules/user/user.routes";
+import { UserRoutes } from "../modules/user/user.routes";
+import { WorkspaceRoutes } from "../modules/workspace/workspace.routes";
+import { GoalRoutes } from "../modules/goal/goal.routes";
+import { AnnouncementRoutes } from "../modules/announcement/announcement.routes";
+import { ActionItemRoutes } from "../modules/actionItem/actionItem.routes";
 
 const router = express.Router();
 
-router.use(apiLimiter);
-
 const moduleRoutes = [
-  {
-    path: "/user",
-    route: userRoutes,
-  },
   {
     path: "/auth",
     route: AuthRoutes,
   },
   {
-    path: "/payment",
-    route: PaymentRoutes,
+    path: "/users",
+    route: UserRoutes,
   },
   {
-    path: "/travel-plans",
-    route: travelPlanRoutes,
+    path: "/workspaces",
+    route: WorkspaceRoutes,
   },
   {
-    path: "/reviews",
-    route: reviewRoutes,
+    path: "/goals",
+    route: GoalRoutes,
+  },
+  {
+    path: "/announcements",
+    route: AnnouncementRoutes,
+  },
+  {
+    path: "/action-items",
+    route: ActionItemRoutes,
   },
 ];
 

@@ -1,0 +1,46 @@
+model Announcement {
+  id          String   @id @default(uuid())
+  title       String
+  content     String   // Rich text
+  isPinned    Boolean  @default(false)
+  workspaceId String
+  authorId    String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  reactions   Reaction[]
+
+  @@map("announcements")
+}
+
+model Comment {
+  id             String       @id @default(uuid())
+  content        String
+  announcementId String
+  userId         String
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@map("comments")
+}
+
+model Reaction {
+  id             String       @id @default(uuid())
+  emoji          String
+  announcementId String
+  userId         String
+  
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@unique([announcementId, userId, emoji])
+  @@map("reactions")
+}

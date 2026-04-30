@@ -2,6 +2,7 @@ import { Server } from "http";
 import app from "./app";
 import { env } from "./config/env";
 import seedAdmin from "./helpers/seed";
+import { SocketHelper } from "./helpers/socketHelper";
 
 async function bootstrap() {
   let server: Server;
@@ -9,9 +10,11 @@ async function bootstrap() {
   try {
     await seedAdmin();
 
-    server = app.listen(env.port, () => {
+    const httpServer = app.listen(env.port, () => {
       console.log(`🚀 Server is running on http://localhost:${env.port}`);
     });
+
+    SocketHelper.initSocket(httpServer);
 
     const exitHandler = () => {
       if (server) {

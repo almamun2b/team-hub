@@ -16,7 +16,7 @@ const emailSender = async ({
       "https://api.brevo.com/v3/smtp/email",
       {
         sender: {
-          name: "Travel Buddy",
+          name: "Team Hub",
           email: env.bravo.email,
         },
         to: [

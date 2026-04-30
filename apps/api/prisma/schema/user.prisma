@@ -1,69 +1,26 @@
 model User {
-  id                 String     @id @default(uuid())
-  email              String     @unique
-  password           String
-  role               UserRole   @default(USER)
-  status             UserStatus @default(ACTIVE)
-  needPasswordChange Boolean    @default(false)
-
-  fullName        String
-  avatar          String?
-  contactNumber   String?
-  bio             String?   @db.Text
-  dateOfBirth     DateTime?
-  gender          Gender?
-  currentLocation String?
-
-  travelInterests  String[]
-  visitedCountries String[]
-
+  id               String   @id @default(uuid())
+  email            String   @unique
+  password         String
+  fullName         String
+  avatar           String?
+  role             UserRole @default(MEMBER)
+  status           UserStatus @default(ACTIVE)
   isVerified       Boolean @default(false)
-  hasVerifiedBadge Boolean @default(false)
-
-  // Soft delete
-  isDeleted Boolean @default(false)
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isDeleted        Boolean @default(false)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relations
-  subscription     Subscription?
-  verificationCode VerificationCode?
-  travelPlans      TravelPlan[]      @relation("CreatedTravelPlans")
-  travelRequests   TravelRequest[]   @relation("TravelRequests")
-  reviewsGiven     Review[]          @relation("ReviewsGiven")
-  reviewsReceived  Review[]          @relation("ReviewsReceived")
+  workspaceMembers WorkspaceMember[]
+  ownedGoals       Goal[]            @relation("GoalOwner")
+  assignedItems    ActionItem[]      @relation("ActionItemAssignee")
+  comments         Comment[]
+  reactions        Reaction[]
+  notifications    Notification[]
+  activities       Activity[]
+  auditLogs        AuditLog[]
 
   @@map("users")
-}
-
-model VerificationCode {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  code      String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("verification_codes")
-}
-
-model Subscription {
-  id               String             @id @default(uuid())
-  userId           String             @unique
-  plan             SubscriptionPlan
-  amountPaid       Int? // Amount in cents
-  status           SubscriptionStatus @default(ACTIVE)
-  startDate        DateTime           @default(now())
-  endDate          DateTime
-  stripeCustomerId String?
-  stripeSubId      String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@map("subscriptions")
 }

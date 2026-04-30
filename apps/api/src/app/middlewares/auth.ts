@@ -12,7 +12,10 @@ const auth = (...roles: string[]) => {
     next: NextFunction
   ) => {
     try {
-      const token = req.headers.authorization || req.cookies.accessToken;
+      let token = req.headers.authorization;
+      if (token && token.startsWith("Bearer ")) {
+        token = token.split(" ")[1];
+      }
 
       if (!token) {
         throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!");

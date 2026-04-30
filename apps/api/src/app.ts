@@ -3,7 +3,6 @@ import cors from "cors";
 import express, { Application, NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
-import { PaymentController } from "./app/modules/payment/payment.controller";
 import router from "./app/routes";
 
 const app: Application = express();
@@ -12,17 +11,10 @@ app.set("trust proxy", 1);
 
 app.use(cookieParser());
 
-// Stripe webhook
-app.post(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  PaymentController.handleStripeWebhookEvent
-);
-
 // CORS Configuration
 app.use(
   cors({
-    origin: ["https://travel-buddy-mamun.vercel.app", "http://localhost:3000"],
+    origin: ["http://localhost:3000", "https://team-hub.up.railway.app"],
     credentials: true,
   })
 );
@@ -35,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req: Request, res: Response) => {
   res.send({
     success: true,
-    message: "Travel Buddy & Meetup API is running!",
+    message: "Collaborative Team Hub API is running!",
     timestamp: new Date().toISOString(),
   });
 });

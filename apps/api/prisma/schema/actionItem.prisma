@@ -1,0 +1,20 @@
+model ActionItem {
+  id          String             @id @default(uuid())
+  title       String
+  priority    ActionItemPriority @default(MEDIUM)
+  status      ActionItemStatus   @default(TODO)
+  dueDate     DateTime?
+  assigneeId  String?
+  goalId      String?
+  workspaceId String
+  
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  // Relations
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignee    User?              @relation("ActionItemAssignee", fields: [assigneeId], references: [id])
+  goal        Goal?              @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("action_items")
+}

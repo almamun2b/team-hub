@@ -1,0 +1,35 @@
+model Goal {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  status      GoalStatus @default(IN_PROGRESS)
+  dueDate     DateTime
+  workspaceId String
+  ownerId     String
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  owner       User       @relation("GoalOwner", fields: [ownerId], references: [id])
+  milestones  Milestone[]
+  actionItems ActionItem[]
+  activities  Activity[]
+
+  @@map("goals")
+}
+
+model Milestone {
+  id          String   @id @default(uuid())
+  title       String
+  progress    Int      @default(0) // Percentage 0-100
+  goalId      String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  goal        Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@map("milestones")
+}
