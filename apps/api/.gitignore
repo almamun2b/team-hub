@@ -1,0 +1,17 @@
+node_modules
+dist
+
+.env
+.env.local
+.env.development
+.env.production
+.env.local
+.vercel
+
+/generated/prisma
+/src/generated/prisma
+
+uploads/*
+!uploads/.gitkeep
+*.log
+
