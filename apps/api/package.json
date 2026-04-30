@@ -1,5 +1,5 @@
 {
-  "name": "part-1",
+  "name": "@team-hub/api",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
