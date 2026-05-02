@@ -1,4 +1,5 @@
 import prisma from "../../../shared/prisma";
+import { SocketHelper } from "../../../helpers/socketHelper";
 import { ActivityServices } from "../activity/activity.service";
 import { NotificationServices } from "../notification/notification.service";
 
@@ -17,6 +18,9 @@ const createAnnouncement = async (userId: string, payload: any) => {
     userId,
     workspaceId: result.workspaceId,
   });
+
+  // Real-time broadcast
+  SocketHelper.broadcastToWorkspace(result.workspaceId, "new_announcement", result);
 
   // Notify all workspace members
   const members = await prisma.workspaceMember.findMany({
@@ -120,7 +124,16 @@ const addReaction = async (userId: string, announcementId: string, emoji: string
       userId,
       emoji,
     },
+    include: {
+      announcement: true,
+      user: {
+        select: { id: true, fullName: true, avatar: true },
+      },
+    },
   });
+
+  // Real-time broadcast
+  SocketHelper.broadcastToWorkspace(result.announcement.workspaceId, "new_reaction", result);
 
   return result;
 };

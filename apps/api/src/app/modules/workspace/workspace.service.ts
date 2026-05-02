@@ -1,6 +1,7 @@
 import { WorkspaceRole } from "@prisma/client";
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
+import { SocketHelper } from "../../../helpers/socketHelper";
 import ApiError from "../../errors/ApiError";
 import { AuditLogServices } from "../auditLog/auditLog.service";
 import { NotificationServices } from "../notification/notification.service";
@@ -88,6 +89,8 @@ const inviteMember = async (workspaceId: string, payload: { email: string, role:
     message: `You have been invited to a new workspace!`,
     link: `/workspaces/${workspaceId}`,
   });
+
+  SocketHelper.joinRoomForUser(user.id, workspaceId);
 
   return result;
 };

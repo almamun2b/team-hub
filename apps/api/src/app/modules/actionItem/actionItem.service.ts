@@ -1,4 +1,5 @@
 import prisma from "../../../shared/prisma";
+import { SocketHelper } from "../../../helpers/socketHelper";
 import { ActivityServices } from "../activity/activity.service";
 import { NotificationServices } from "../notification/notification.service";
 
@@ -48,6 +49,9 @@ const updateActionItem = async (id: string, payload: any) => {
     where: { id },
     data: payload,
   });
+
+  // Real-time broadcast
+  SocketHelper.broadcastToWorkspace(result.workspaceId, "action_item_updated", result);
 
   if (payload.status === "DONE") {
     await ActivityServices.createActivity({

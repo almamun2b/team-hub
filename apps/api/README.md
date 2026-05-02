@@ -94,6 +94,10 @@ Detailed reference for all REST endpoints and real-time events.
 
 | Event | Type | Payload Example | Description |
 | :--- | :--- | :--- | :--- |
-| `join_workspace` | `EMIT` | `{ "workspaceId": "...", "userId": "..." }` | Join workspace room |
-| `user_status_changed` | `LISTEN` | `{ "userId": "...", "status": "online" }` | Presence update |
-| `notification:new` | `LISTEN` | `{ "title": "...", "message": "..." }` | Live push notification |
+| `identify` | `EMIT` | `"user-uuid-here"` | Connects user & auto-joins all workspace rooms |
+| `user_status_changed` | `LISTEN` | `{ "userId": "...", "status": "online/offline" }` | Presence update |
+| `new_notification` | `LISTEN` | `{ "title": "...", "message": "..." }` | Targeted push notification |
+| `new_announcement` | `LISTEN` | Announcement Object | Live feed for new posts |
+| `new_reaction` | `LISTEN` | Reaction Object | Real-time emoji reactions |
+| `goal_updated` | `LISTEN` | Goal Object | Live status changes for goals |
+| `action_item_updated` | `LISTEN` | Action Item Object | Live updates for tasks |

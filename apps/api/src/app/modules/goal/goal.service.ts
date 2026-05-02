@@ -1,4 +1,5 @@
 import prisma from "../../../shared/prisma";
+import { SocketHelper } from "../../../helpers/socketHelper";
 import { ActivityServices } from "../activity/activity.service";
 import { NotificationServices } from "../notification/notification.service";
 
@@ -53,6 +54,9 @@ const updateGoal = async (id: string, payload: any) => {
     userId: result.ownerId,
     workspaceId: result.workspaceId,
   });
+
+  // Real-time broadcast
+  SocketHelper.broadcastToWorkspace(result.workspaceId, "goal_updated", result);
 
   if (payload.status === "DONE") {
     await NotificationServices.createNotification({
