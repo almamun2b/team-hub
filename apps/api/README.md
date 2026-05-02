@@ -1,180 +1,99 @@
 # Collaborative Team Hub API Documentation
 
-Production-grade REST API for managing shared goals, announcements, and action items in real time. Built with Node.js, Express, Prisma, and Socket.io.
+Detailed reference for all REST endpoints and real-time events.
 
 ---
 
-## 🔐 Authentication
+## 🔑 1. Authentication (`/api/v1/auth`)
 
-### Register User
-`POST /api/v1/auth/register`
-- **Payload:**
-  ```json
-  {
-    "fullName": "John Doe",
-    "email": "john@example.com",
-    "password": "securepassword123"
-  }
-  ```
-- **Response (201):**
-  ```json
-  {
-    "success": true,
-    "message": "User registered successfully!",
-    "data": {
-      "id": "uuid-string",
-      "fullName": "John Doe",
-      "email": "john@example.com",
-      "role": "MEMBER"
-    }
-  }
-  ```
-
-### Login
-`POST /api/v1/auth/login`
-- **Payload:**
-  ```json
-  {
-    "email": "john@example.com",
-    "password": "securepassword123"
-  }
-  ```
-- **Response (200):** Sets `refreshToken` in httpOnly cookie.
-  ```json
-  {
-    "success": true,
-    "message": "User logged in successfully!",
-    "data": {
-      "accessToken": "jwt-token-string",
-      "user": { "id": "...", "fullName": "...", "role": "..." }
-    }
-  }
-  ```
+| Method | Endpoint | Params | Payload Example | Response Example |
+| :--- | :--- | :--- | :--- | :--- |
+| `POST` | `/register` | - | `{ "fullName": "...", "email": "...", "password": "..." }` | `{ "success": true, "data": { "id": "...", "email": "..." } }` |
+| `POST` | `/login` | - | `{ "email": "...", "password": "..." }` | `{ "success": true, "data": { "accessToken": "...", "user": {...} } }` |
+| `POST` | `/refresh-token` | - | - | `{ "success": true, "data": { "accessToken": "..." } }` |
+| `POST` | `/logout` | - | - | `{ "success": true, "message": "Logged out" }` |
+| `GET` | `/me` | - | - | `{ "success": true, "data": { "id": "...", "fullName": "..." } }` |
+| `PATCH` | `/me` | - | FormData `{ "file": "...", "data": "..." }` | Updated user object |
 
 ---
 
-## 🏢 Workspaces
+## 🏢 2. Workspaces (`/api/v1/workspaces`)
 
-### Create Workspace
-`POST /api/v1/workspaces/create`
-- **Headers:** `Authorization: Bearer <token>`
-- **Payload:**
-  ```json
-  {
-    "name": "Design Team",
-    "description": "Creative workspace for design team",
-    "accentColor": "#FF5733"
-  }
-  ```
-
-### Invite Member
-`POST /api/v1/workspaces/:workspaceId/invite`
-- **Params:** `workspaceId` (UUID)
-- **Payload:**
-  ```json
-  {
-    "email": "jane@example.com",
-    "role": "MEMBER"
-  }
-  ```
-
-### Export Workspace Data (CSV)
-`GET /api/v1/workspaces/:workspaceId/export`
-- **Response:** Returns a downloadable `.csv` file containing goals and statuses.
+| Method | Endpoint | Params | Payload Example | Response Example |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/` | - | - | List of workspaces |
+| `POST` | `/create` | - | `{ "name": "...", "description": "..." }` | Created workspace object |
+| `GET` | `/:id` | `id` | - | Workspace with member details |
+| `PATCH` | `/:id` | `id` | `{ "name": "..." }` | Updated workspace object |
+| `DELETE` | `/:id` | `id` | - | `{ "success": true, "message": "Deleted" }` |
+| `GET` | `/:id/members` | `id` | - | List of members |
+| `POST` | `/:id/invite` | `id` | `{ "email": "...", "role": "MEMBER" }` | `{ "success": true, "message": "Invited" }` |
+| `DELETE` | `/:id/members/:userId` | `id`, `userId` | - | `{ "success": true, "message": "Removed" }` |
+| `GET` | `/:id/export` | `id` | - | CSV File Download |
 
 ---
 
-## 🎯 Goals & Milestones
+## 🎯 3. Goals & Milestones (`/api/v1/goals`)
 
-### Create Goal
-`POST /api/v1/goals/create`
-- **Payload:**
-  ```json
-  {
-    "workspaceId": "ws-uuid",
-    "title": "Launch Q3 Campaign",
-    "description": "Reach 10k users",
-    "dueDate": "2024-09-30T00:00:00Z",
-    "status": "IN_PROGRESS"
-  }
-  ```
-
-### Add Milestone
-`POST /api/v1/goals/:goalId/milestones`
-- **Payload:**
-  ```json
-  {
-    "title": "Finalize Ad Copies",
-    "progress": 0
-  }
-  ```
+| Method | Endpoint | Params | Payload Example | Response Example |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/workspace/:workspaceId` | `workspaceId` | - | List of goals with milestones |
+| `POST` | `/create` | - | `{ "workspaceId": "...", "title": "..." }` | Created goal object |
+| `PATCH` | `/:id` | `id` | `{ "status": "DONE" }` | Updated goal object |
+| `DELETE` | `/:id` | `id` | - | `{ "success": true, "message": "Deleted" }` |
+| `POST` | `/:id/milestones` | `id` (Goal) | `{ "title": "...", "progress": 50 }` | Created milestone object |
+| `PATCH` | `/:id/milestones` | `id` (Milestone) | `{ "progress": 100 }` | Updated milestone object |
 
 ---
 
-## 📢 Announcements
+## 📢 4. Announcements (`/api/v1/announcements`)
 
-### Create Announcement
-`POST /api/v1/announcements/create`
-- **Payload:**
-  ```json
-  {
-    "workspaceId": "ws-uuid",
-    "title": "Weekly Sync Time Change",
-    "content": "Sync is now at 10 AM on Mondays.",
-    "isPinned": false
-  }
-  ```
-
-### Add Reaction
-`POST /api/v1/announcements/:announcementId/reactions`
-- **Payload:**
-  ```json
-  {
-    "emoji": "🚀"
-  }
-  ```
+| Method | Endpoint | Params | Payload Example | Response Example |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/workspace/:workspaceId` | `workspaceId` | - | List of announcements |
+| `POST` | `/create` | - | `{ "workspaceId": "...", "content": "..." }` | Created announcement object |
+| `PATCH` | `/:id` | `id` | `{ "content": "..." }` | Updated announcement object |
+| `DELETE` | `/:id` | `id` | - | `{ "success": true, "message": "Deleted" }` |
+| `PATCH` | `/:id/pin` | `id` | `{ "isPinned": true }` | Updated pinned status |
+| `POST` | `/:id/comments` | `id` | `{ "content": "..." }` | Created comment object |
+| `POST` | `/:id/reactions`| `id` | `{ "emoji": "🚀" }` | Reaction object |
 
 ---
 
-## ✅ Action Items (Kanban)
+## ✅ 5. Action Items (`/api/v1/action-items`)
 
-### Create Action Item
-`POST /api/v1/action-items/create`
-- **Payload:**
-  ```json
-  {
-    "workspaceId": "ws-uuid",
-    "goalId": "goal-uuid",
-    "assigneeId": "user-uuid",
-    "title": "Design Banner Assets",
-    "priority": "HIGH",
-    "status": "TODO",
-    "dueDate": "2024-08-15T00:00:00Z"
-  }
-  ```
+| Method | Endpoint | Params | Payload Example | Response Example |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/workspace/:workspaceId` | `workspaceId` | - | List of items |
+| `POST` | `/create` | - | `{ "workspaceId": "...", "title": "..." }` | Created item object |
+| `PATCH` | `/:id` | `id` | `{ "status": "DONE" }` | Updated item object |
+| `DELETE` | `/:id` | `id` | - | `{ "success": true, "message": "Deleted" }` |
+
+---
+
+## 🔔 6. Notifications (`/api/v1/notifications`)
+
+| Method | Endpoint | Params | Payload Example | Response Example |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/` | - | - | Notifications with `unreadCount` |
+| `PATCH` | `/:id/read` | `id` | - | Updated notification object |
+| `PATCH` | `/read-all` | - | - | `{ "success": true, "message": "All read" }` |
+
+---
+
+## 📊 7. Analytics (`/api/v1/analytics`)
+
+| Method | Endpoint | Params | Response Example |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/summary/:workspaceId` | `workspaceId` | `{ "totalGoals": 5, "completedThisWeek": 2, ... }` |
+| `GET` | `/goals-chart/:workspaceId`| `workspaceId` | `[ { "status": "DONE", "count": 10 } ]` |
 
 ---
 
 ## ⚡ Real-time (Socket.io)
 
-### Room: `workspace_{id}`
-Users should join a room corresponding to their active workspace.
-
-| Event | Direction | Description |
-| :--- | :--- | :--- |
-| `join_workspace` | Client -> Server | Joins the specific workspace room. |
-| `new_post` | Server -> Client | Notifies when a new goal/announcement is made. |
-| `status_changed` | Server -> Client | Notifies when an item status is updated. |
-
----
-
-## 🛠️ Advanced Features Implemented
-1. **Advanced RBAC:** Hierarchical role checking for both global roles (Super Admin) and Workspace-specific roles (Admin/Member).
-2. **Audit Logs:** Automated tracking of sensitive actions (Invitations, Goal deletions, Settings changes).
-
----
-
-## 🚀 Setup & Run
-1. Install dependencies: `pnpm install`
-2. Sync Database: `pnpm db:push`
-3. Run Development: `pnpm dev`
+| Event | Type | Payload Example | Description |
+| :--- | :--- | :--- | :--- |
+| `join_workspace` | `EMIT` | `{ "workspaceId": "...", "userId": "..." }` | Join workspace room |
+| `user_status_changed` | `LISTEN` | `{ "userId": "...", "status": "online" }` | Presence update |
+| `notification:new` | `LISTEN` | `{ "title": "...", "message": "..." }` | Live push notification |

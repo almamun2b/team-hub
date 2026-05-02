@@ -16,23 +16,20 @@ enum WorkspaceRole {
 }
 
 enum GoalStatus {
+  NOT_STARTED
   IN_PROGRESS
-  COMPLETED
-  ON_HOLD
-  CANCELLED
+  DONE
 }
 
 enum ActionItemPriority {
   LOW
   MEDIUM
   HIGH
-  URGENT
 }
 
 enum ActionItemStatus {
   TODO
   IN_PROGRESS
-  REVIEW
   DONE
 }
 

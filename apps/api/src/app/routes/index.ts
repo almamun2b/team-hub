@@ -5,6 +5,8 @@ import { WorkspaceRoutes } from "../modules/workspace/workspace.routes";
 import { GoalRoutes } from "../modules/goal/goal.routes";
 import { AnnouncementRoutes } from "../modules/announcement/announcement.routes";
 import { ActionItemRoutes } from "../modules/actionItem/actionItem.routes";
+import { NotificationRoutes } from "../modules/notification/notification.routes";
+import { AnalyticsRoutes } from "../modules/analytics/analytics.routes";
 
 const router = express.Router();
 
@@ -32,6 +34,14 @@ const moduleRoutes = [
   {
     path: "/action-items",
     route: ActionItemRoutes,
+  },
+  {
+    path: "/notifications",
+    route: NotificationRoutes,
+  },
+  {
+    path: "/analytics",
+    route: AnalyticsRoutes,
   },
 ];
 

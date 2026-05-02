@@ -15,6 +15,8 @@ const auth = (...roles: string[]) => {
       let token = req.headers.authorization;
       if (token && token.startsWith("Bearer ")) {
         token = token.split(" ")[1];
+      } else if (req.cookies && req.cookies.accessToken) {
+        token = req.cookies.accessToken;
       }
 
       if (!token) {

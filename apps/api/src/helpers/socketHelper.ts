@@ -3,6 +3,8 @@ import { Server, Socket } from "socket.io";
 
 let io: Server;
 
+const onlineUsers = new Map<string, string>(); // userId -> socketId
+
 const initSocket = (server: HttpServer) => {
   io = new Server(server, {
     cors: {
@@ -15,12 +17,34 @@ const initSocket = (server: HttpServer) => {
   io.on("connection", (socket: Socket) => {
     console.log("A user connected:", socket.id);
 
-    socket.on("join_workspace", (workspaceId: string) => {
-      socket.join(workspaceId);
-      console.log(`User ${socket.id} joined workspace ${workspaceId}`);
+    socket.on("join_workspace", (data: { workspaceId: string, userId: string }) => {
+      socket.join(data.workspaceId);
+      onlineUsers.set(data.userId, socket.id);
+      
+      io.to(data.workspaceId).emit("user_status_changed", {
+        userId: data.userId,
+        status: "online"
+      });
+      
+      console.log(`User ${data.userId} joined workspace ${data.workspaceId}`);
     });
 
     socket.on("disconnect", () => {
+      let disconnectedUserId: string | undefined;
+      for (const [userId, socketId] of onlineUsers.entries()) {
+        if (socketId === socket.id) {
+          disconnectedUserId = userId;
+          onlineUsers.delete(userId);
+          break;
+        }
+      }
+
+      if (disconnectedUserId) {
+        io.emit("user_status_changed", {
+          userId: disconnectedUserId,
+          status: "offline"
+        });
+      }
       console.log("User disconnected:", socket.id);
     });
   });
@@ -35,7 +59,15 @@ const getIO = () => {
   return io;
 };
 
+const sendMessageToUser = (userId: string, event: string, data: any) => {
+  const socketId = onlineUsers.get(userId);
+  if (socketId && io) {
+    io.to(socketId).emit(event, data);
+  }
+};
+
 export const SocketHelper = {
   initSocket,
   getIO,
+  sendMessageToUser,
 };

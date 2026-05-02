@@ -11,7 +11,6 @@ interface Env {
   superAdmin: {
     email: string;
     password: string;
-    contactNumber: string;
     fullName: string;
   };
   cloudinary: {
@@ -24,21 +23,6 @@ interface Env {
     accessTokenExpiresIn: string;
     refreshTokenSecret: string;
     refreshTokenExpiresIn: string;
-    resetPassSecret: string;
-    resetPassTokenExpiresIn: string;
-  };
-  stripe: {
-    secretKey: string;
-    webhookSecret: string;
-    // webhookUrl: string;
-    successUrl: string;
-    cancelUrl: string;
-  };
-  openRouterApiKey: string;
-  resetPasswordUrl: string;
-  emailSender: {
-    email: string;
-    appPass: string;
   };
   bravo: {
     apiKey: string;
@@ -51,27 +35,21 @@ dotenv.config();
 const getEnvVar = (name: string) => {
   const value = process.env[name];
   if (!value) {
-    throw new ApiError(
-      httpStatus.NOT_FOUND,
-      `Environment variable ${name} is required but was not provided`
-    );
+    return "";
   }
   return value;
 };
 
 const env: Env = {
-  nodeEnv: getEnvVar("NODE_ENV") as "development" | "production",
-  port: getEnvVar("PORT"),
+  nodeEnv: (getEnvVar("NODE_ENV") || "development") as "development" | "production",
+  port: getEnvVar("PORT") || "4000",
   databaseUrl: getEnvVar("DATABASE_URL"),
-  clientUrl: getEnvVar("CLIENT_URL"),
-  bcryptSaltRound: getEnvVar("BCRYPT_SALT_ROUND"),
-  openRouterApiKey: getEnvVar("OPEN_ROUTER_API_KEY"),
-  resetPasswordUrl: getEnvVar("RESET_PASSWORD_URL"),
+  clientUrl: getEnvVar("CLIENT_URL") || "http://localhost:3000",
+  bcryptSaltRound: getEnvVar("BCRYPT_SALT_ROUND") || "12",
   superAdmin: {
-    email: getEnvVar("SUPER_ADMIN_EMAIL"),
-    password: getEnvVar("SUPER_ADMIN_PASSWORD"),
-    contactNumber: getEnvVar("SUPER_ADMIN_CONTACT_NUMBER"),
-    fullName: getEnvVar("SUPER_ADMIN_FULL_NAME"),
+    email: getEnvVar("SUPER_ADMIN_EMAIL") || "admin@fredocloud.com",
+    password: getEnvVar("SUPER_ADMIN_PASSWORD") || "admin123",
+    fullName: getEnvVar("SUPER_ADMIN_FULL_NAME") || "Super Admin",
   },
   cloudinary: {
     cloudName: getEnvVar("CLOUDINARY_CLOUD_NAME"),
@@ -79,23 +57,10 @@ const env: Env = {
     apiSecret: getEnvVar("CLOUDINARY_API_SECRET"),
   },
   jwt: {
-    accessTokenSecret: getEnvVar("JWT_ACCESS_TOKEN_SECRET"),
-    accessTokenExpiresIn: getEnvVar("JWT_ACCESS_TOKEN_EXPIRES_IN"),
-    refreshTokenSecret: getEnvVar("JWT_REFRESH_TOKEN_SECRET"),
-    refreshTokenExpiresIn: getEnvVar("JWT_REFRESH_TOKEN_EXPIRES_IN"),
-    resetPassSecret: getEnvVar("JWT_RESET_PASS_TOKEN_SECRET"),
-    resetPassTokenExpiresIn: getEnvVar("JWT_RESET_PASS_TOKEN_EXPIRES_IN"),
-  },
-  stripe: {
-    secretKey: getEnvVar("STRIPE_SECRET_KEY"),
-    webhookSecret: getEnvVar("STRIPE_WEBHOOK_SECRET"),
-    // webhookUrl: getEnvVar("STRIPE_WEBHOOK_URL"),
-    successUrl: getEnvVar("STRIPE_PAYMENT_SUCCESS_URL"),
-    cancelUrl: getEnvVar("STRIPE_PAYMENT_CANCEL_URL"),
-  },
-  emailSender: {
-    email: getEnvVar("EMAIL_SENDER_EMAIL"),
-    appPass: getEnvVar("EMAIL_SENDER_APP_PASS"),
+    accessTokenSecret: getEnvVar("JWT_ACCESS_TOKEN_SECRET") || "secret",
+    accessTokenExpiresIn: getEnvVar("JWT_ACCESS_TOKEN_EXPIRES_IN") || "1d",
+    refreshTokenSecret: getEnvVar("JWT_REFRESH_TOKEN_SECRET") || "refresh-secret",
+    refreshTokenExpiresIn: getEnvVar("JWT_REFRESH_TOKEN_EXPIRES_IN") || "30d",
   },
   bravo: {
     apiKey: getEnvVar("BREVO_API_KEY"),

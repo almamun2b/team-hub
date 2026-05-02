@@ -2,6 +2,8 @@ import { WorkspaceRole } from "@prisma/client";
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiError";
+import { AuditLogServices } from "../auditLog/auditLog.service";
+import { NotificationServices } from "../notification/notification.service";
 
 const createWorkspace = async (userId: string, payload: any) => {
   const result = await prisma.$transaction(async (tx) => {
@@ -16,6 +18,15 @@ const createWorkspace = async (userId: string, payload: any) => {
         role: WorkspaceRole.ADMIN,
       },
     });
+
+    await AuditLogServices.createLog({
+      action: "WORKSPACE_CREATED",
+      entityType: "WORKSPACE",
+      entityId: workspace.id,
+      userId,
+      workspaceId: workspace.id,
+      changes: payload,
+    }, tx);
 
     return workspace;
   });
@@ -70,6 +81,14 @@ const inviteMember = async (workspaceId: string, payload: { email: string, role:
     },
   });
 
+  await NotificationServices.createNotification({
+    userId: user.id,
+    type: "INVITE",
+    title: "Workspace Invitation",
+    message: `You have been invited to a new workspace!`,
+    link: `/workspaces/${workspaceId}`,
+  });
+
   return result;
 };
 
@@ -115,10 +134,88 @@ const exportWorkspaceData = async (workspaceId: string) => {
   return csv;
 };
 
+const getWorkspaceById = async (id: string) => {
+  const result = await prisma.workspace.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: { members: true, goals: true },
+      },
+    },
+  });
+
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Workspace not found!");
+  }
+
+  return result;
+};
+
+const updateWorkspace = async (id: string, userId: string, payload: any) => {
+  const result = await prisma.workspace.update({
+    where: { id },
+    data: payload,
+  });
+
+  await AuditLogServices.createLog({
+    action: "WORKSPACE_UPDATED",
+    entityType: "WORKSPACE",
+    entityId: id,
+    userId,
+    workspaceId: id,
+    changes: payload,
+  });
+
+  return result;
+};
+
+const deleteWorkspace = async (id: string, userId: string) => {
+  await AuditLogServices.createLog({
+    action: "WORKSPACE_DELETED",
+    entityType: "WORKSPACE",
+    entityId: id,
+    userId,
+    workspaceId: id,
+    changes: { deleted: true },
+  });
+
+  await prisma.workspace.delete({
+    where: { id },
+  });
+};
+
+const removeMember = async (workspaceId: string, userId: string) => {
+  const member = await prisma.workspaceMember.findUnique({
+    where: {
+      workspaceId_userId: {
+        workspaceId,
+        userId,
+      },
+    },
+  });
+
+  if (!member) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Member not found in this workspace!");
+  }
+
+  await prisma.workspaceMember.delete({
+    where: {
+      workspaceId_userId: {
+        workspaceId,
+        userId,
+      },
+    },
+  });
+};
+
 export const WorkspaceServices = {
   createWorkspace,
   getMyWorkspaces,
+  getWorkspaceById,
+  updateWorkspace,
+  deleteWorkspace,
   inviteMember,
   getWorkspaceMembers,
+  removeMember,
   exportWorkspaceData,
 };

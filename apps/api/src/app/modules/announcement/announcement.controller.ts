@@ -41,9 +41,9 @@ const togglePin = catchAsync(async (req: Request, res: Response) => {
 });
 
 const addComment = catchAsync(async (req: Request, res: Response) => {
-  const { announcementId } = req.params;
+  const { id } = req.params;
   const { content } = req.body;
-  const result = await AnnouncementServices.addComment((req as any).user.id, announcementId as string, content);
+  const result = await AnnouncementServices.addComment((req as any).user.id, id as string, content);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -54,9 +54,9 @@ const addComment = catchAsync(async (req: Request, res: Response) => {
 });
 
 const addReaction = catchAsync(async (req: Request, res: Response) => {
-  const { announcementId } = req.params;
+  const { id } = req.params;
   const { emoji } = req.body;
-  const result = await AnnouncementServices.addReaction((req as any).user.id, announcementId as string, emoji);
+  const result = await AnnouncementServices.addReaction((req as any).user.id, id as string, emoji);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -66,9 +66,34 @@ const addReaction = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateAnnouncement = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await AnnouncementServices.updateAnnouncement(id as string, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Announcement updated successfully!",
+    data: result,
+  });
+});
+
+const deleteAnnouncement = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  await AnnouncementServices.deleteAnnouncement(id as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Announcement deleted successfully!",
+  });
+});
+
 export const AnnouncementController = {
   createAnnouncement,
   getWorkspaceAnnouncements,
+  updateAnnouncement,
+  deleteAnnouncement,
   togglePin,
   addComment,
   addReaction,

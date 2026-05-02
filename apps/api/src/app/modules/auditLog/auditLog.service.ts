@@ -1,7 +1,8 @@
 import prisma from "../../../shared/prisma";
 
-const createLog = async (data: any) => {
-  const result = await prisma.auditLog.create({
+const createLog = async (data: any, tx?: any) => {
+  const client = tx || prisma;
+  const result = await client.auditLog.create({
     data,
   });
   return result;

@@ -20,12 +20,15 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.loginUser(req.body);
   const { refreshToken, accessToken, user } = result;
 
-  // Set refresh token in httpOnly cookie
-  res.cookie("refreshToken", refreshToken, {
-    secure: env.nodeEnv === "production",
+  const cookieOptions = {
+    secure: true,
     httpOnly: true,
-    sameSite: "none",
-  });
+    sameSite: "none" as const,
+  };
+
+  // Set tokens in httpOnly cookies
+  res.cookie("refreshToken", refreshToken, cookieOptions);
+  res.cookie("accessToken", accessToken, cookieOptions);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -33,14 +36,24 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     message: "User logged in successfully!",
     data: {
       accessToken,
+      refreshToken,
       user,
     },
   });
 });
 
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
-  const { refreshToken } = req.cookies;
-  const result = await AuthServices.refreshToken(refreshToken);
+  const { refreshToken: oldRefreshToken } = req.cookies;
+  const result = await AuthServices.refreshToken(oldRefreshToken);
+  const { accessToken } = result;
+
+  const cookieOptions = {
+    secure: true,
+    httpOnly: true,
+    sameSite: "none" as const,
+  };
+
+  res.cookie("accessToken", accessToken, cookieOptions);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -52,6 +65,7 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 
 const logoutUser = catchAsync(async (req: Request, res: Response) => {
   res.clearCookie("refreshToken");
+  res.clearCookie("accessToken");
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

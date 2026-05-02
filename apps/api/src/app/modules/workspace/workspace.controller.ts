@@ -59,10 +59,64 @@ const exportWorkspaceData = catchAsync(async (req: Request, res: Response) => {
   res.send(result);
 });
 
+const getWorkspaceById = catchAsync(async (req: Request, res: Response) => {
+  const { workspaceId } = req.params;
+  const result = await WorkspaceServices.getWorkspaceById(workspaceId as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Workspace details fetched successfully!",
+    data: result,
+  });
+});
+
+const updateWorkspace = catchAsync(async (req: Request, res: Response) => {
+  const { workspaceId } = req.params;
+  const result = await WorkspaceServices.updateWorkspace(
+    workspaceId as string,
+    (req as any).user.id,
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Workspace updated successfully!",
+    data: result,
+  });
+});
+
+const deleteWorkspace = catchAsync(async (req: Request, res: Response) => {
+  const { workspaceId } = req.params;
+  await WorkspaceServices.deleteWorkspace(workspaceId as string, (req as any).user.id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Workspace deleted successfully!",
+  });
+});
+
+const removeMember = catchAsync(async (req: Request, res: Response) => {
+  const { workspaceId, userId } = req.params;
+  await WorkspaceServices.removeMember(workspaceId as string, userId as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Member removed successfully!",
+  });
+});
+
 export const WorkspaceController = {
   createWorkspace,
   getMyWorkspaces,
+  getWorkspaceById,
+  updateWorkspace,
+  deleteWorkspace,
   inviteMember,
   getWorkspaceMembers,
+  removeMember,
   exportWorkspaceData,
 };

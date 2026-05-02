@@ -2,7 +2,7 @@ model Goal {
   id          String     @id @default(uuid())
   title       String
   description String?
-  status      GoalStatus @default(IN_PROGRESS)
+  status      GoalStatus @default(NOT_STARTED)
   dueDate     DateTime
   workspaceId String
   ownerId     String

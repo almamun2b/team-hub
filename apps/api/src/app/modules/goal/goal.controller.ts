@@ -27,22 +27,32 @@ const getWorkspaceGoals = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateGoalStatus = catchAsync(async (req: Request, res: Response) => {
-  const { goalId } = req.params;
-  const { status } = req.body;
-  const result = await GoalServices.updateGoalStatus(goalId as string, status);
+const updateGoal = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await GoalServices.updateGoal(id as string, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Goal status updated successfully!",
+    message: "Goal updated successfully!",
     data: result,
   });
 });
 
+const deleteGoal = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  await GoalServices.deleteGoal(id as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Goal deleted successfully!",
+  });
+});
+
 const addMilestone = catchAsync(async (req: Request, res: Response) => {
-  const { goalId } = req.params;
-  const result = await GoalServices.addMilestone(goalId as string, req.body);
+  const { id } = req.params;
+  const result = await GoalServices.addMilestone(id as string, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -52,15 +62,14 @@ const addMilestone = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateMilestoneProgress = catchAsync(async (req: Request, res: Response) => {
-  const { milestoneId } = req.params;
-  const { progress } = req.body;
-  const result = await GoalServices.updateMilestoneProgress(milestoneId as string, progress);
+const updateMilestone = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await GoalServices.updateMilestone(id as string, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Milestone progress updated successfully!",
+    message: "Milestone updated successfully!",
     data: result,
   });
 });
@@ -68,7 +77,8 @@ const updateMilestoneProgress = catchAsync(async (req: Request, res: Response) =
 export const GoalController = {
   createGoal,
   getWorkspaceGoals,
-  updateGoalStatus,
+  updateGoal,
+  deleteGoal,
   addMilestone,
-  updateMilestoneProgress,
+  updateMilestone,
 };
