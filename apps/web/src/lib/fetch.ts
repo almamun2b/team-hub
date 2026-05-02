@@ -68,10 +68,41 @@ export function configureFetch(config: {
   if (config.hooks) hooks = { ...hooks, ...config.hooks };
 }
 
+import * as setCookieParser from "set-cookie-parser";
+
 async function parseResponse<T>(
   endpoint: string,
   response: Response
 ): Promise<T | null> {
+  // If we are on the server, forward any Set-Cookie headers to the client
+  if (typeof window === "undefined") {
+    const setCookieHeader = response.headers.get("set-cookie");
+    if (setCookieHeader) {
+      try {
+        const { cookies } = await import("next/headers");
+        const cookieStore = await cookies();
+        
+        // Use set-cookie-parser to parse the comma-separated or array of Set-Cookie headers
+        // fetch API combines multiple Set-Cookie headers into one comma-separated string
+        const parsedCookies = setCookieParser.parse(setCookieParser.splitCookiesString(setCookieHeader));
+        
+        for (const cookie of parsedCookies) {
+          cookieStore.set(cookie.name, cookie.value, {
+            domain: cookie.domain,
+            path: cookie.path || "/",
+            expires: cookie.expires,
+            maxAge: cookie.maxAge,
+            httpOnly: cookie.httpOnly,
+            secure: cookie.secure,
+            sameSite: cookie.sameSite as "lax" | "strict" | "none" | undefined,
+          });
+        }
+      } catch (error) {
+        console.warn("[Fetch Error]: Failed to forward Set-Cookie headers", error);
+      }
+    }
+  }
+
   const contentType = response.headers.get("content-type");
   if (!contentType || !contentType.includes("application/json")) {
     if (!response.ok) {

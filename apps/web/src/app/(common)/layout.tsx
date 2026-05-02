@@ -1,7 +1,5 @@
 import Footer from "@/components/shared/Footer";
-import Navbar from "@/components/shared/navbar/Navbar";
-import ErrorBoundary from "@/components/shared/ErrorBoundary";
-// import { Suspense } from "react";
+import Header from "@/components/shared/Header";
 
 export default function CommonLayout({
   children,
@@ -9,16 +7,12 @@ export default function CommonLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      <ErrorBoundary>
-        <Navbar />
-      </ErrorBoundary>
-      <main className="min-h-dvh container mx-auto px-6">
-        <ErrorBoundary>{children}</ErrorBoundary>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1">
+        {children}
       </main>
-      <ErrorBoundary>
-        <Footer />
-      </ErrorBoundary>
-    </>
+      <Footer />
+    </div>
   );
 }

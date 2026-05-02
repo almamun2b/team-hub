@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ChevronsUpDown, LogOut } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -18,37 +16,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { logoutUser } from "@/services/auth/logout";
-import { me } from "@/services/auth/me";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { logoutAction } from "@/actions/auth.actions";
+import { User } from "@/types/auth";
 
-export function NavUser() {
+export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar();
 
-  const [userInfo, setUserInfo] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true);
-      const res = await me();
-      setUserInfo(res);
-      setLoading(false);
-    };
-
-    fetchUser();
-  }, []);
-
-  const logout = async () => {
-    const res: any = await logoutUser();
-    if (res.success) {
-      toast.success(res.message);
-      router.push("/");
-    }
-  };
+  if (!user) return null;
 
   return (
     <SidebarMenu>
@@ -60,21 +34,14 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  src={userInfo?.data?.avatar || ""}
-                  alt={userInfo?.data?.fullName || "User"}
-                />
+                <AvatarImage src={user.avatar || ""} alt={user.fullName || "User"} />
                 <AvatarFallback className="rounded-lg">
-                  {userInfo?.data?.fullName?.charAt(0)}
+                  {user.fullName?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {userInfo?.data?.fullName || "Admin"}
-                </span>
-                <span className="truncate text-xs">
-                  {userInfo?.data?.email || ""}
-                </span>
+                <span className="truncate font-medium">{user.fullName}</span>
+                <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -88,29 +55,26 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={userInfo?.data?.avatar || ""}
-                    alt={userInfo?.data?.fullName || "User"}
-                  />
+                  <AvatarImage src={user.avatar || ""} alt={user.fullName || "User"} />
                   <AvatarFallback className="rounded-lg">
-                    {userInfo?.data?.fullName?.charAt(0)}
+                    {user.fullName?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {userInfo?.data?.fullName || "Admin"}
-                  </span>
-                  <span className="truncate text-xs">
-                    {userInfo?.data?.email || ""}
-                  </span>
+                  <span className="truncate font-medium">{user.fullName}</span>
+                  <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+            <form action={logoutAction}>
+              <DropdownMenuItem asChild>
+                <button type="submit" className="w-full flex items-center cursor-pointer text-destructive focus:text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </button>
+              </DropdownMenuItem>
+            </form>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

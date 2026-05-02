@@ -1,3 +1,5 @@
+import { getMeAction } from "@/actions/auth.actions";
+import { redirect } from "next/navigation";
 import CommonBreadcrumb from "@/components/modules/dashboard/CommonBreadcrumb";
 import { AppSidebar } from "@/components/modules/dashboard/app-sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -12,9 +14,13 @@ export default async function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const userInfo = await getMeAction();
+  if (!userInfo?.success) {
+    redirect("/login");
+  }
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={userInfo.data} />
       <SidebarInset>
         <header className="sticky top-0 bg-background flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b z-20">
           <div className="flex items-center gap-2 px-4">
