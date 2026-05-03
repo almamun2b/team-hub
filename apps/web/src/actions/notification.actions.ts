@@ -2,7 +2,7 @@
 "use server";
 
 import { NotificationService } from "@/services/notification.service";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 
 export async function getNotificationsAction() {
   try {
@@ -20,7 +20,7 @@ export async function getNotificationsAction() {
 export async function markNotificationAsReadAction(notificationId: string) {
   try {
     const response = await NotificationService.markAsRead(notificationId);
-    revalidateTag("notifications");
+    updateTag("notifications");
     return response;
   } catch (error: any) {
     return {
@@ -33,7 +33,7 @@ export async function markNotificationAsReadAction(notificationId: string) {
 export async function markAllNotificationsAsReadAction() {
   try {
     const response = await NotificationService.markAllAsRead();
-    revalidateTag("notifications");
+    updateTag("notifications");
     return response;
   } catch (error: any) {
     return {
