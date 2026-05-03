@@ -35,6 +35,10 @@ const getWorkspaceSummary = async (workspaceId: string) => {
     where: { workspaceId },
   });
 
+  const activeMembers = await prisma.workspaceMember.count({
+    where: { workspaceId },
+  });
+
   const actionsCompletedThisWeek = await prisma.actionItem.count({
     where: {
       workspaceId,
@@ -50,6 +54,7 @@ const getWorkspaceSummary = async (workspaceId: string) => {
     totalGoals,
     completedThisWeek,
     overdueCount,
+    activeMembers,
     totalActions,
     actionsCompletedThisWeek,
   };

@@ -75,13 +75,16 @@ export function UpdateProfileForm({ user }: UpdateProfileFormProps) {
   const onSubmit = async (data: UpdateProfileFormData) => {
     const res = await updateMyProfile({
       file: avatarFile,
-      data: data,
+      data: { fullName: data.fullName },
     });
 
     if (res.success) {
       router.push("/dashboard/profile");
       toast.success(res.message);
+      return;
     }
+
+    toast.error(res.message || "Failed to update profile");
   };
 
   return (

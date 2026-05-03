@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/providers/theme-provider";
+import { ClientSocketProvider } from "@/components/providers/ClientSocketProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -35,8 +36,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster richColors position="top-center" />
-          {children}
+          <ClientSocketProvider>
+            <Toaster richColors position="top-center" />
+            {children}
+          </ClientSocketProvider>
         </ThemeProvider>
       </body>
     </html>

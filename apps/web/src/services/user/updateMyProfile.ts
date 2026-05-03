@@ -2,7 +2,7 @@
 "use server";
 
 import { $fetch } from "@/lib/fetch";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 
 interface UpdateProfileData {
   fullName?: string;
@@ -25,9 +25,9 @@ export const updateMyProfile = async ({
     formData.append("data", JSON.stringify(data));
 
     const result = await $fetch.patch<any>("/users/update-me", formData);
-    // if (result?.success) {
-    //   revalidateTag("user");
-    // }
+    if (result?.success) {
+      updateTag("user");
+    }
 
     return result;
   } catch (error: any) {

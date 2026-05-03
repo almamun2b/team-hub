@@ -6,11 +6,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Target, MessageSquare, CheckSquare, BarChart3, User } from "lucide-react";
+import { AnalyticsSection } from "@/components/modules/dashboard/AnalyticsSection";
+import { getCurrentWorkspace } from "@/lib/workspace";
 
 export const metadata: Metadata = {
   title: "Dashboard - Team Hub",
   description: "Your collaborative workspace dashboard.",
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const user = await me();
@@ -20,6 +24,8 @@ export default async function DashboardPage() {
   }
 
   const userData = user.data;
+  const currentWorkspace = await getCurrentWorkspace();
+  const workspaceId = currentWorkspace?.id;
 
   const quickLinks = [
     { label: "Goals", href: "/goals", icon: Target, description: "Manage your team goals" },
@@ -30,15 +36,14 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="container mx-auto space-y-6">
       {/* Welcome Section */}
-      <div className="text-center py-8">
+      <div className="text-center pb-5">
         <h1 className="text-3xl font-bold">Welcome back, {userData.fullName}!</h1>
-        <p className="text-muted-foreground mt-2">Here's your workspace overview.</p>
       </div>
 
       {/* User Profile Card */}
-      <Card className="max-w-md mx-auto">
+      <Card className="max-w-md mx-auto hidden">
         <CardHeader className="text-center">
           <Avatar className="h-20 w-20 mx-auto mb-4">
             <AvatarImage src={userData.avatar ?? ""} />
@@ -58,6 +63,17 @@ export default async function DashboardPage() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Analytics Section */}
+      {workspaceId ? (
+        <AnalyticsSection workspaceId={workspaceId} />
+      ) : (
+        <Card>
+          <CardContent className="pt-6 text-center text-muted-foreground">
+            Select or create a workspace to load analytics.
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Links */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

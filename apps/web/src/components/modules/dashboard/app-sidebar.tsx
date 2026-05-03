@@ -18,7 +18,9 @@ import {
   CheckSquare, 
   BarChart3,
   User,
-  Plus
+  Plus,
+  Building2,
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { NavUser } from "./nav-user";
@@ -30,6 +32,11 @@ const navigation = [
     name: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    name: "Workspaces",
+    href: "/workspaces",
+    icon: Building2,
   },
   {
     name: "Goals",
@@ -94,7 +101,7 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
         </SidebarMenu>
         
         {/* Workspace Switcher Placeholder */}
-        <div className="mt-8 px-4 py-2">
+        <div className="mt-8 px-4 py-2 hidden">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 group-data-[collapsible=icon]:hidden">
             Workspaces
           </p>

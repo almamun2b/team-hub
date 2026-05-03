@@ -65,7 +65,22 @@ const getWorkspaceAnnouncements = async (workspaceId: string) => {
     },
   });
 
-  return result;
+  const authorIds = [...new Set(result.map((announcement) => announcement.authorId))];
+  const authors = await prisma.user.findMany({
+    where: { id: { in: authorIds } },
+    select: {
+      id: true,
+      fullName: true,
+      avatar: true,
+    },
+  });
+
+  const authorMap = new Map(authors.map((author) => [author.id, author]));
+
+  return result.map((announcement) => ({
+    ...announcement,
+    author: authorMap.get(announcement.authorId) || null,
+  }));
 };
 
 const togglePin = async (id: string, isPinned: boolean) => {
