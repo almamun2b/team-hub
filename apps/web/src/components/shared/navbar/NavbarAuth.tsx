@@ -9,12 +9,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { logoutUser } from "@/services/auth/logout";
-import { UserProfile } from "@/types/user";
+import { logoutAction } from "@/actions/auth.actions";
+import { User as UserType } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export default function NavbarAuth({ user }: { user: UserProfile | null }) {
+export default function NavbarAuth({ user }: { user: UserType | null }) {
   return (
     <div className="flex items-center justify-end">
       {user?.email ? <ProfileDropdown userInfo={user} /> : <LoginButton />}
@@ -22,14 +22,10 @@ export default function NavbarAuth({ user }: { user: UserProfile | null }) {
   );
 }
 
-function ProfileDropdown({ userInfo }: { userInfo: UserProfile }) {
+function ProfileDropdown({ userInfo }: { userInfo: UserType }) {
   const router = useRouter();
   const handleLogout = async () => {
-    const res = await logoutUser();
-    if (res.success) {
-      toast.success(res.message);
-      router.push("/");
-    }
+    await logoutAction();
   };
 
   return (

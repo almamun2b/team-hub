@@ -4,24 +4,16 @@
 import { $fetch } from "@/lib/fetch";
 import { revalidateTag } from "next/cache";
 
-type User = {
-  email: string;
-  fullName: string;
-  contactNumber?: string;
-  currentLocation?: string;
-  travelInterests?: string;
-  bio?: string;
-  gender?: "MALE" | "FEMALE";
-  dateOfBirth?: string;
-  visitedCountries?: string[];
-};
+interface UpdateProfileData {
+  fullName?: string;
+}
 
 export const updateMyProfile = async ({
   file,
   data,
 }: {
   file: File | null;
-  data: Partial<User>;
+  data: Partial<UpdateProfileData>;
 }): Promise<any> => {
   try {
     const formData = new FormData();
@@ -32,17 +24,10 @@ export const updateMyProfile = async ({
 
     formData.append("data", JSON.stringify(data));
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, String(value));
-      }
-    });
-
-    const result = await $fetch.patch<any>("/user/profile/update", formData);
-
-    if (result.success) {
-      revalidateTag("user", "");
-    }
+    const result = await $fetch.patch<any>("/users/update-me", formData);
+    // if (result?.success) {
+    //   revalidateTag("user");
+    // }
 
     return result;
   } catch (error: any) {

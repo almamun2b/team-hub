@@ -10,10 +10,7 @@ import {
   Calendar,
   CheckCircle,
   Edit,
-  Globe,
   Mail,
-  MapPin,
-  Phone,
   Shield,
   User as UserIcon,
   XCircle,
@@ -21,7 +18,15 @@ import {
 import Link from "next/link";
 
 interface ProfileContentProps {
-  user: any;
+  user: {
+    id: string;
+    email: string;
+    fullName: string;
+    avatar?: string;
+    role: string;
+    status: string;
+    createdAt: string;
+  };
 }
 
 export function ProfileContent({ user }: ProfileContentProps) {
@@ -40,7 +45,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
         return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
       case "ADMIN":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
-      case "USER":
+      case "MEMBER":
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       default:
         return "bg-muted text-muted-foreground";
@@ -53,7 +58,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       case "INACTIVE":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-      case "BLOCK":
+      case "BLOCKED":
         return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
       default:
         return "bg-muted text-muted-foreground";
@@ -94,19 +99,12 @@ export function ProfileContent({ user }: ProfileContentProps) {
                   <Badge className={getStatusColor(user.status)}>
                     {user.status}
                   </Badge>
-
-                  {user.hasVerifiedBadge && (
-                    <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                      <BadgeCheck className="h-4 w-4 mr-1" />
-                      Verified Badge
-                    </Badge>
-                  )}
                 </div>
               </CardHeader>
 
               <CardContent>
                 <Button asChild className="w-full">
-                  <Link href="/profile/edit">
+                  <Link href="/dashboard/profile/edit">
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Profile
                   </Link>
@@ -127,100 +125,11 @@ export function ProfileContent({ user }: ProfileContentProps) {
                 {/* Email */}
                 <InfoItem icon={Mail} label="Email" value={user.email} />
 
-                {/* Phone */}
-                <InfoItem
-                  icon={Phone}
-                  label="Contact Number"
-                  value={user.contactNumber || "Not provided"}
-                />
-
-                {/* Location */}
-                <InfoItem
-                  icon={MapPin}
-                  label="Current Location"
-                  value={user.currentLocation || "Not provided"}
-                />
-
-                {/* Verification */}
-                <div className="space-y-1">
-                  <LabelWithIcon
-                    icon={user.isVerified ? CheckCircle : XCircle}
-                    label="Email Verification"
-                  />
-                  <div className="flex items-center gap-2">
-                    {user.isVerified ? (
-                      <span className="text-green-600 font-medium">
-                        Verified
-                      </span>
-                    ) : (
-                      <span className="text-red-600 font-medium">
-                        Not Verified
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Bio */}
-                <div className="sm:col-span-2 space-y-1">
-                  <LabelWithIcon icon={UserIcon} label="Bio" />
-                  <p className="text-muted-foreground">
-                    {user.bio || "No bio provided"}
-                  </p>
-                </div>
-                {/* Bio */}
-                <div className="sm:col-span-2 space-y-1">
-                  <LabelWithIcon icon={UserIcon} label="DateOfBirth" />
-                  <p className="text-muted-foreground">
-                    {user?.dateOfBirth
-                      ? formatDate(user.dateOfBirth)
-                      : "No provided"}
-                  </p>
-                </div>
-
-                {/* Travel Interests */}
-                <TagList
-                  icon={Globe}
-                  label="Travel Interests"
-                  items={user.travelInterests}
-                />
-
-                {/* Visited Countries */}
-                <TagList
-                  icon={MapPin}
-                  label="Visited Countries"
-                  items={user.visitedCountries}
-                />
-
-                {/* Subscription */}
-                {user.subscription && (
-                  <div className="sm:col-span-2 space-y-2">
-                    <LabelWithIcon icon={Shield} label="Subscription" />
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>{user.subscription.plan}</Badge>
-                      <Badge
-                        className={getStatusColor(user.subscription.status)}
-                      >
-                        {user.subscription.status}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(user.subscription.startDate)} →{" "}
-                      {formatDate(user.subscription.endDate)}
-                    </p>
-                  </div>
-                )}
-
-                {/* Dates */}
+                {/* Member Since */}
                 <InfoItem
                   icon={Calendar}
                   label="Member Since"
                   value={formatDate(user.createdAt)}
-                />
-
-                <InfoItem
-                  icon={Calendar}
-                  label="Last Updated"
-                  value={formatDate(user.updatedAt)}
                 />
               </CardContent>
             </Card>

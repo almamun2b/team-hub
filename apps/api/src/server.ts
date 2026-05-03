@@ -10,11 +10,11 @@ async function bootstrap() {
   try {
     await seedAdmin();
 
-    const httpServer = app.listen(env.port, () => {
+    server = app.listen(env.port, () => {
       console.log(`🚀 Server is running on http://localhost:${env.port}`);
     });
 
-    SocketHelper.initSocket(httpServer);
+    SocketHelper.initSocket(server);
 
     const exitHandler = () => {
       if (server) {

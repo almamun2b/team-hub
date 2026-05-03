@@ -2,21 +2,12 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const AUTH_ROUTES = [
-  "/forgot-password",
   "/login",
   "/register",
-  "/reset-password",
-  "/verify-email",
 ];
 const PROTECTED_ROUTES = [
   "/dashboard",
-  "/reviews",
-  "/travel-plans",
-  "/users",
   "/profile",
-  "/change-password",
-  "/my-travel-plans",
-  "/subscription",
 ];
 
 export function proxy(req: NextRequest) {
@@ -64,17 +55,8 @@ export function proxy(req: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/reviews/:path*",
-    "/travel-plans/:path*",
-    "/users/:path*",
     "/profile/:path*",
-    "/change-password/:path*",
-    "/my-travel-plans/:path*",
-    "/subscription/:path*",
-    "/forgot-password/:path*",
     "/login/:path*",
     "/register/:path*",
-    "/reset-password/:path*",
-    "/verify-email/:path*",
   ],
 };

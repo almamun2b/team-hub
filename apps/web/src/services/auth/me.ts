@@ -1,11 +1,11 @@
 "use server";
 
 import { $fetch } from "@/lib/fetch";
-import { UserProfileResponse } from "@/types/user";
+import { MeResponse } from "@/types/auth";
 
 export async function me() {
   try {
-    return await $fetch.get<UserProfileResponse>("/auth/me", {
+    return await $fetch.get<MeResponse>("/auth/me", {
       cache: "force-cache",
       next: {
         tags: ["user"],

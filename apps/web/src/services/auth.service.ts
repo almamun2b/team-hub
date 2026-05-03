@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { $fetch } from "@/lib/fetch";
-import { AuthResponse, RefreshResponse } from "@/types/auth";
+import { LoginResponse, RegisterResponse, MeResponse, RefreshResponse } from "@/types/auth";
 
 export const AuthService = {
-  async register(data: any): Promise<AuthResponse | null> {
-    return $fetch.post<AuthResponse>("/auth/register", data);
+  async register(data: any): Promise<RegisterResponse | null> {
+    return $fetch.post<RegisterResponse>("/auth/register", data);
   },
 
-  async login(credentials: any): Promise<AuthResponse | null> {
-    return $fetch.post<AuthResponse>("/auth/login", credentials);
+  async login(credentials: any): Promise<LoginResponse | null> {
+    return $fetch.post<LoginResponse>("/auth/login", credentials);
   },
 
   async logout(): Promise<any> {
@@ -18,7 +19,7 @@ export const AuthService = {
     return $fetch.post<RefreshResponse>("/auth/refresh-token");
   },
 
-  async getMe(): Promise<AuthResponse | null> {
-    return $fetch.get<AuthResponse>("/auth/me");
+  async getMe(): Promise<MeResponse | null> {
+    return $fetch.get<MeResponse>("/auth/me");
   },
 };

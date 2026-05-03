@@ -1,4 +1,4 @@
-import { Gender, UserStatus } from "@prisma/client";
+import { UserStatus } from "@prisma/client";
 import { z } from "zod";
 
 const createAdmin = z.object({
@@ -13,7 +13,7 @@ const createAdmin = z.object({
 });
 
 const updateStatus = z.object({
-  status: z.enum([UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.DELETED]),
+  status: z.enum([UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.INACTIVE]),
   isVerified: z.boolean().optional(),
   hasVerifiedBadge: z.boolean().optional(),
 });
@@ -23,7 +23,7 @@ const updateProfile = z.object({
   contactNumber: z.string().optional(),
   bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
   dateOfBirth: z.string().optional(),
-  gender: z.enum([Gender.MALE, Gender.FEMALE, Gender.OTHER]).optional(),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
   currentLocation: z.string().optional(),
   travelInterests: z.array(z.string()).optional(),
   visitedCountries: z.array(z.string()).optional(),

@@ -12,11 +12,8 @@ const Navbar = async () => {
     { label: "Home", href: "/", icon: null },
     { label: "About", href: "/about", icon: null },
     ...(userInfo?.data?.email
-      ? [{ label: "Matching Plan", href: "/matching-plan", icon: null }]
+      ? [{ label: "Dashboard", href: "/dashboard", icon: null }]
       : []),
-    { label: "Pricing", href: "/pricing", icon: null },
-    { label: "Travel Plans", href: "/travel-plan", icon: null },
-    { label: "Travelers", href: "/travelers", icon: null },
   ];
   return (
     <nav className="fixed h-14 w-full bg-background border dark:border-slate-700/70 z-50">

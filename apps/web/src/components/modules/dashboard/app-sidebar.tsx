@@ -17,12 +17,12 @@ import {
   LayoutDashboard, 
   CheckSquare, 
   BarChart3,
-  Settings,
+  User,
   Plus
 } from "lucide-react";
 import Link from "next/link";
 import { NavUser } from "./nav-user";
-import { User } from "@/types/auth";
+import { User as UserType } from "@/types/auth";
 
 
 const navigation = [
@@ -51,9 +51,14 @@ const navigation = [
     href: "/analytics",
     icon: BarChart3,
   },
+  {
+    name: "Profile",
+    href: "/dashboard/profile",
+    icon: User,
+  },
 ];
 
-export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: User | null }) {
+export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: UserType }) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
