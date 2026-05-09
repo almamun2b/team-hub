@@ -4,6 +4,7 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
+import { env } from "./config/env";
 
 const app: Application = express();
 
@@ -14,7 +15,7 @@ app.use(cookieParser());
 // CORS Configuration
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://team-hub.up.railway.app"],
+    origin: env.clientUrl,
     credentials: true,
   })
 );
