@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import { fileUploader } from "../../../helpers/fileUploader";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
-import { fileUploader } from "../../../helpers/fileUploader";
 import { UserServices } from "./user.service";
 
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
@@ -29,7 +29,10 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
     payload.avatar = uploadResult.secure_url;
   }
 
-  const result = await UserServices.updateMyProfile((req as any).user.id, payload);
+  const result = await UserServices.updateMyProfile(
+    (req as any).user.id,
+    payload,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -39,7 +42,26 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const searchUsers = catchAsync(async (req: Request, res: Response) => {
+  const { searchTerm } = req.query as { searchTerm?: string };
+
+  console.log(searchTerm, "searchTerm");
+
+  const result = await UserServices.searchUsers(
+    searchTerm as string,
+    (req as any).user.id,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Users fetched successfully!",
+    data: result,
+  });
+});
+
 export const UserController = {
   getMyProfile,
   updateMyProfile,
+  searchUsers,
 };

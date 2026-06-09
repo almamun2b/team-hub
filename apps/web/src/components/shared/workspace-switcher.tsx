@@ -1,26 +1,56 @@
 "use client";
 
-import { useEffect } from "react";
-import { ChevronDown, Plus } from "lucide-react";
-import { Workspace } from "@/types/workspace";
-import { useStore } from "@/store/useStore";
-import { WorkspaceService } from "@/services/workspace.service";
-import { setCurrentWorkspace } from "@/lib/workspace";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { setCurrentWorkspace } from "@/lib/workspace";
+import { WorkspaceService } from "@/services/workspace.service";
+import { useStore } from "@/store/useStore";
+import { Workspace } from "@/types/workspace";
+import { ChevronDown } from "lucide-react";
+import { useEffect } from "react";
 
-export function WorkspaceSwitcher() {
+interface WorkspaceSwitcherProps {
+  initialWorkspaces?: Workspace[];
+  initialCurrentWorkspace?: Workspace | null;
+}
+
+export function WorkspaceSwitcher({
+  initialWorkspaces = [],
+  initialCurrentWorkspace = null,
+}: WorkspaceSwitcherProps) {
   const {
     workspaces,
     currentWorkspace,
     setWorkspaces,
     setCurrentWorkspace: setStoreWorkspace,
   } = useStore();
+  const availableWorkspaces =
+    workspaces.length > 0 ? workspaces : initialWorkspaces;
+  const selectedWorkspace = currentWorkspace || initialCurrentWorkspace;
+
+  useEffect(() => {
+    if (initialWorkspaces.length > 0) {
+      setWorkspaces(initialWorkspaces);
+    }
+
+    if (!currentWorkspace) {
+      const fallbackWorkspace = initialCurrentWorkspace || initialWorkspaces[0];
+      if (fallbackWorkspace) {
+        setStoreWorkspace(fallbackWorkspace);
+      }
+    }
+  }, [
+    currentWorkspace,
+    initialCurrentWorkspace,
+    initialWorkspaces,
+    setStoreWorkspace,
+    setWorkspaces,
+  ]);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -28,13 +58,19 @@ export function WorkspaceSwitcher() {
       if (response.success && response.data) {
         setWorkspaces(response.data);
         if (!currentWorkspace && response.data.length > 0) {
-          setStoreWorkspace(response.data[0]);
-          await setCurrentWorkspace(response.data[0]);
+          const fallbackWorkspace = initialCurrentWorkspace || response.data[0];
+          setStoreWorkspace(fallbackWorkspace);
+          await setCurrentWorkspace(fallbackWorkspace);
         }
       }
     };
     fetchWorkspaces();
-  }, [setWorkspaces, setStoreWorkspace, currentWorkspace]);
+  }, [
+    currentWorkspace,
+    initialCurrentWorkspace,
+    setStoreWorkspace,
+    setWorkspaces,
+  ]);
 
   const handleWorkspaceSelect = async (workspace: Workspace) => {
     setStoreWorkspace(workspace);
@@ -45,20 +81,26 @@ export function WorkspaceSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="w-48 justify-between">
-          {currentWorkspace ? currentWorkspace.name : "Select Workspace"}
+          {selectedWorkspace ? selectedWorkspace.name : "Select Workspace"}
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
-        {workspaces.map((workspace) => (
-          <DropdownMenuItem
-            key={workspace.id}
-            onClick={() => handleWorkspaceSelect(workspace)}
-            className={currentWorkspace?.id === workspace.id ? "bg-accent" : ""}
-          >
-            {workspace.name}
-          </DropdownMenuItem>
-        ))}
+        {availableWorkspaces.length === 0 ? (
+          <DropdownMenuItem disabled>No workspaces found</DropdownMenuItem>
+        ) : (
+          availableWorkspaces.map((workspace) => (
+            <DropdownMenuItem
+              key={workspace.id}
+              onClick={() => handleWorkspaceSelect(workspace)}
+              className={
+                selectedWorkspace?.id === workspace.id ? "bg-accent" : ""
+              }
+            >
+              {workspace.name}
+            </DropdownMenuItem>
+          ))
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

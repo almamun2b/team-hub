@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-interface User {
-  id: string;
-  email: string;
-  role: "USER" | "ADMIN";
-}
+import { User } from "@/types/auth";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -15,10 +10,10 @@ export function useAuth() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const response = await fetch("/api/auth/me");
+        const response = await fetch("/api/v1/auth/me");
         if (response.ok) {
           const userData = await response.json();
-          setUser(userData);
+          setUser(userData?.data ?? null);
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);

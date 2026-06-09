@@ -1,5 +1,7 @@
 import { getMeAction } from "@/actions/auth.actions";
 import { getNotificationsAction } from "@/actions/notification.actions";
+import { WorkspaceService } from "@/services/workspace.service";
+import { getCurrentWorkspace } from "@/lib/workspace";
 import { redirect } from "next/navigation";
 import CommonBreadcrumb from "@/components/modules/dashboard/CommonBreadcrumb";
 import { AppSidebar } from "@/components/modules/dashboard/app-sidebar";
@@ -25,6 +27,9 @@ export default async function DashboardLayout({
   const notificationsData = await getNotificationsAction();
   const notifications = notificationsData?.data?.notifications || [];
   const unreadCount = notificationsData?.data?.unreadCount || 0;
+  const workspacesData = await WorkspaceService.getWorkspaces();
+  const workspaces = workspacesData?.success ? workspacesData.data || [] : [];
+  const currentWorkspace = await getCurrentWorkspace();
 
   return (
     <SidebarProvider>
@@ -42,7 +47,10 @@ export default async function DashboardLayout({
             </div>
             <div className="flex items-center gap-2">
               <NotificationCenter initialNotifications={notifications} unreadCount={unreadCount} />
-              <WorkspaceSwitcher />
+              <WorkspaceSwitcher
+                initialWorkspaces={workspaces}
+                initialCurrentWorkspace={currentWorkspace}
+              />
             </div>
           </div>
         </header>
